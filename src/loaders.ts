@@ -4,6 +4,7 @@ import parseJsonType from 'parse-json';
 import yamlType from 'yaml';
 import importFreshType from 'import-fresh';
 import getPackageTypeType from 'get-package-type';
+import semverType from 'semver';
 import { Loader, LoaderAsync, LoaderSync } from './index';
 import { LoadersSync } from './types';
 
@@ -18,6 +19,7 @@ const loadCjs: LoaderSync = function loadCjs(filepath) {
 };
 
 let getPackageType: typeof getPackageTypeType;
+let semver: typeof semverType;
 let loadMjs: LoaderAsync;
 const loadJs: Loader = function loadJs(filepath, content) {
   if (getPackageType === undefined) {
@@ -25,11 +27,19 @@ const loadJs: Loader = function loadJs(filepath, content) {
   }
 
   if (getPackageType.sync(filepath) === 'module') {
-    if (loadMjs === undefined) {
-      loadMjs = require(`./loadMjs`);
+    if (semver === undefined) {
+      semver = require('semver');
     }
 
-    return loadMjs(filepath, content);
+    // Initial: https://github.com/nodejs/node/releases/tag/v13.2.0
+    // Backport: https://github.com/nodejs/node/releases/tag/v12.17.0
+    if (semver.satisfies(process.version, '>=13.2.0 || ^12.17.0')) {
+      if (loadMjs === undefined) {
+        loadMjs = require(`./loadMjs`);
+      }
+
+      return loadMjs(filepath, content);
+    }
   }
 
   return loadCjs(filepath, content);
