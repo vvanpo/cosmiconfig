@@ -82,7 +82,7 @@ describe('cosmiconfig', () => {
       expect(transform.name).toBe('identity');
       const loaderFunctionsByName = getLoaderFunctionsByName(loaders);
       expect(loaderFunctionsByName).toEqual({
-        '.cjs': 'loadJs',
+        '.cjs': 'loadCjs',
         '.js': 'loadJs',
         '.json': 'loadJson',
         '.yaml': 'loadYaml',

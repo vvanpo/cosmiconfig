@@ -93,12 +93,28 @@
     "restoreMocks": true
   },
   "babel": {
+    "overrides": [
+      {
+        "test": "./src/loadMjs.ts",
+        "presets": [
+          [
+            "@babel/preset-env",
+            {
+              "modules": false,
+              "targets": {
+                "node": "10"
+              }
+            }
+          ]
+        ]
+      }
+    ],
     "presets": [
       [
         "@babel/preset-env",
         {
           "targets": {
-            "node": "8.9"
+            "node": "10"
           }
         }
       ],
@@ -107,6 +123,7 @@
   },
   "dependencies": {
     "@types/parse-json": "^4.0.0",
+    "get-package-type": "^0.1.0",
     "import-fresh": "^3.2.1",
     "parse-json": "^5.0.0",
     "path-type": "^4.0.0",

@@ -3,17 +3,36 @@
 import parseJsonType from 'parse-json';
 import yamlType from 'yaml';
 import importFreshType from 'import-fresh';
-import { LoaderSync } from './index';
+import getPackageTypeType from 'get-package-type';
+import { Loader, LoaderAsync, LoaderSync } from './index';
 import { LoadersSync } from './types';
 
 let importFresh: typeof importFreshType;
-const loadJs: LoaderSync = function loadJs(filepath) {
+const loadCjs: LoaderSync = function loadCjs(filepath) {
   if (importFresh === undefined) {
     importFresh = require('import-fresh');
   }
 
   const result = importFresh(filepath);
   return result;
+};
+
+let getPackageType: typeof getPackageTypeType;
+let loadMjs: LoaderAsync;
+const loadJs: Loader = function loadJs(filepath, content) {
+  if (getPackageType === undefined) {
+    getPackageType = require('get-package-type');
+  }
+
+  if (getPackageType.sync(filepath) === 'module') {
+    if (loadMjs === undefined) {
+      loadMjs = require(`./loadMjs`);
+    }
+
+    return loadMjs(filepath, content);
+  }
+
+  return loadCjs(filepath, content);
 };
 
 let parseJson: typeof parseJsonType;
@@ -46,6 +65,6 @@ const loadYaml: LoaderSync = function loadYaml(filepath, content) {
   }
 };
 
-const loaders: LoadersSync = { loadJs, loadJson, loadYaml };
+const loaders: LoadersSync = { loadCjs, loadJs, loadJson, loadYaml };
 
 export { loaders };

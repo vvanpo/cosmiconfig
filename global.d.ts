@@ -1,1 +1,1 @@
-declare module 'yaml';
+declare module 'get-package-type';

@@ -13,9 +13,11 @@ import {
 } from './types';
 
 type LoaderResult = Config | null;
-export type Loader =
-  | ((filepath: string, content: string) => Promise<LoaderResult>)
-  | LoaderSync;
+export type Loader = LoaderAsync | LoaderSync;
+export type LoaderAsync = (
+  filepath: string,
+  content: string,
+) => Promise<LoaderResult>;
 export type LoaderSync = (filepath: string, content: string) => LoaderResult;
 
 export type Transform =
@@ -82,7 +84,7 @@ function cosmiconfigSync(moduleName: string, options: OptionsSync = {}) {
 
 // do not allow mutation of default loaders. Make sure it is set inside options
 const defaultLoaders = Object.freeze({
-  '.cjs': loaders.loadJs,
+  '.cjs': loaders.loadCjs,
   '.js': loaders.loadJs,
   '.json': loaders.loadJson,
   '.yaml': loaders.loadYaml,
